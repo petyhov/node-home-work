@@ -1,35 +1,30 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
-const contactsRouter = require("./routers/contacts.router");
+const operation = require("./contacts");
+const yargs = require("yargs");
 
-const PORT = 8080;
+const argv = require("yargs").argv;
 
-class Server {
-  constructor() {
-    this.server = null;
-  }
-  start() {
-    this.server = express();
-    this.initMiddleware();
-    this.initRouters();
-    this.listen();
-  }
-  initMiddleware() {
-    this.server.use(cors());
-    this.server.use(express.json());
-    this.server.use(morgan("dev"));
-  }
-  initRouters() {
-    this.server.use("/contacts", contactsRouter);
-  }
-  listen() {
-    this.server.listen(PORT, () => {
-      console.log("Server is listening on port: " + PORT);
-    });
+// TODO: рефакторить
+function invokeAction({ action, id, name, email, phone }) {
+  switch (action) {
+    case "list":
+      console.log(operation.listContacts());
+      break;
+
+    case "get":
+      console.log(operation.getContactById(id));
+      break;
+
+    case "add":
+      operation.addContact(name, email, phone);
+      break;
+
+    case "remove":
+      operation.removeContact(id);
+      break;
+
+    default:
+      console.warn("\x1B[31m Unknown action type!");
   }
 }
 
-const server = new Server();
-
-server.start();
+invokeAction(argv);
