@@ -7,12 +7,12 @@ const arrContacts = JSON.parse(fs.readFileSync(contactsPath));
 
 class ContactsController {
   getUsers(req, res) {
-    res.json(arrContacts);
+    return res.status(200).json(arrContacts);
   }
 
   getById = (req, res) => {
     const userIndex = this.findIndex(req);
-    return res.json(arrContacts[userIndex]);
+    return res.status(200).json(arrContacts[userIndex]);
   };
 
   addContact(req, res) {

@@ -3,7 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const contactsRouter = require("./routers/contacts.router");
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 class Server {
   constructor() {
