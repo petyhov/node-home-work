@@ -7,11 +7,11 @@ const argv = require("yargs").argv;
 function invokeAction({ action, id, name, email, phone }) {
   switch (action) {
     case "list":
-      console.log(operation.listContacts());
+      operation.listContacts();
       break;
 
     case "get":
-      console.log(operation.getContactById(id));
+      operation.getContactById(id);
       break;
 
     case "add":
