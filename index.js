@@ -7,10 +7,10 @@ const morgan = require("morgan");
 const contactsRouter = require("./contacts/contacts.router");
 
 dotenv.config();
-const DB_NAME = process.env.DB_NAME;
-const DB_PASSWORD = process.env.DB_PASSWORD;
+const DB_NAME = "okIN87IBhflLoj1M";
+const DB_PASSWORD = "db-contacts";
 const PORT = process.env.PORT || 8080;
-const MONGO_URL = `mongodb+srv://admin:${DB_PASSWORD}@cluster0.zh685.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`;
+const MONGO_URL = `mongodb+srv://admin:okIN87IBhflLoj1M@cluster0.zh685.mongodb.net/db-contacts?retryWrites=true&w=majority`;
 
 let server;
 
