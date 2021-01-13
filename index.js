@@ -1,14 +1,10 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
 const contactsRouter = require("./contacts/contacts.router");
 
-dotenv.config();
-const DB_NAME = "okIN87IBhflLoj1M";
-const DB_PASSWORD = "db-contacts";
 const PORT = process.env.PORT || 8080;
 const MONGO_URL = `mongodb+srv://admin:okIN87IBhflLoj1M@cluster0.zh685.mongodb.net/db-contacts?retryWrites=true&w=majority`;
 
