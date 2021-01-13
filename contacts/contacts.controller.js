@@ -93,7 +93,6 @@ async function updateUser(req, res) {
   if (!updateContact) {
     return res.status(404).send("Contact is not found");
   }
-
   res.status(200).json(updateContact);
 }
 
