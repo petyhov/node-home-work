@@ -14,6 +14,7 @@ router.post(
   ContactsController.validateNewUser,
   ContactsController.addContact
 );
+
 router.delete(
   "/:id",
   ContactsController.validateContactId,
