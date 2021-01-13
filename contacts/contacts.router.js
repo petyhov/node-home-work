@@ -1,10 +1,14 @@
 const { Router } = require("express");
-const ContactsController = require("../controllers/contacts.controller");
+const ContactsController = require("./contacts.controller");
 
 const router = Router();
 
-router.get("/", ContactsController.getUsers);
-router.get("/:id", ContactsController.validateId, ContactsController.getById);
+router.get("/", ContactsController.getContacts);
+router.get(
+  "/:id",
+  ContactsController.validateContactId,
+  ContactsController.getById
+);
 router.post(
   "/",
   ContactsController.validateNewUser,
@@ -12,12 +16,13 @@ router.post(
 );
 router.delete(
   "/:id",
-  ContactsController.validateId,
+  ContactsController.validateContactId,
   ContactsController.removeContact
 );
+
 router.put(
   "/:id",
-  ContactsController.validateId,
+  ContactsController.validateContactId,
   ContactsController.updateUser
 );
 
