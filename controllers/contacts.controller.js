@@ -3,53 +3,80 @@ const path = require("path");
 const Joi = require("joi");
 
 const contactsPath = path.join(__dirname, "../models/contacts.json");
-const arrContacts = JSON.parse(fs.readFileSync(contactsPath));
 
 class ContactsController {
   getUsers(req, res) {
-    return res.status(200).json(arrContacts);
+    fs.readFile(contactsPath, (err, data) => {
+      if (err) throw err;
+      return res.status(200).json(JSON.parse(data));
+    });
   }
 
   getById = (req, res) => {
-    const userIndex = this.findIndex(req);
-    return res.status(200).json(arrContacts[userIndex]);
+    fs.readFile(contactsPath, (err, data) => {
+      if (err) throw err;
+      const arrContacts = JSON.parse(data);
+      const id = this.parseId(req);
+      const contactById = arrContacts.find((contact) => contact.id === id);
+      return res.status(200).json(contactById);
+    });
   };
 
   addContact(req, res) {
-    const newUser = { id: arrContacts.length + 1, ...req.body };
-    arrContacts.push(newUser);
-    fs.writeFileSync(contactsPath, JSON.stringify(arrContacts));
-    return res.status(201).json(newUser);
+    fs.readFile(contactsPath, (err, data) => {
+      if (err) throw err;
+      const arrContacts = JSON.parse(data);
+      const newUser = { id: arrContacts.length + 1, ...req.body };
+      arrContacts.push(newUser);
+      fs.writeFile(contactsPath, JSON.stringify(arrContacts), (err) => {
+        if (err) throw err;
+        return res.status(201).json(newUser);
+      });
+    });
   }
+
   removeContact = (req, res) => {
-    const userIndex = this.findIndex(req);
-    arrContacts.splice(userIndex, 1);
-    return res.status(200).json({ message: "contact deleted" });
+    fs.readFile(contactsPath, (err, data) => {
+      if (err) throw err;
+      const id = this.parseId(req);
+      const arrContacts = JSON.parse(data);
+      const newArrContacts = arrContacts.filter((contact) => contact.id !== id);
+      fs.writeFile(contactsPath, JSON.stringify(newArrContacts), (err) => {
+        if (err) throw err;
+        return res.status(200).json({ message: "contact deleted" });
+      });
+    });
   };
 
   updateUser = (req, res) => {
-    if (req.body) {
-      return res.status(400).json({ message: "missing fields" });
-    }
-    const userIndex = this.findIndex(req);
-    const updateUser = { ...arrContacts[userIndex], ...req.body };
-    arrContacts[userIndex] = updateUser;
-    fs.writeFileSync(contactsPath, JSON.stringify(arrContacts));
-    return res.status(200).json(arrContacts[userIndex]);
+    fs.readFile(contactsPath, (err, data) => {
+      if (Object.keys(req.body).length === 0) {
+        res.status(400).json({ message: "missing fields" });
+      }
+      const id = this.parseId(req);
+      const arrContacts = JSON.parse(data);
+      arrContacts.map((contact) => {
+        if (contact.id === id) {
+          contact = { ...contact, ...req.body };
+          fs.writeFile(contactsPath, JSON.stringify(arrContacts), (err) => {
+            if (err) throw err;
+            return res.status(200).json(contact);
+          });
+        }
+      });
+    });
   };
 
-  findIndex(req) {
-    const { id } = req.params;
-    const userId = parseInt(id);
-    return arrContacts.findIndex(({ id }) => id === userId);
-  }
-
   validateId = (req, res, next) => {
-    const checkIndex = this.findIndex(req);
-    if (checkIndex === -1) {
-      return res.status(404).json({ message: "Not found" });
-    }
-    next();
+    fs.readFile(contactsPath, (err, data) => {
+      const id = this.parseId(req);
+      const arrContacts = JSON.parse(data);
+      const result = arrContacts.find((contact) => contact.id === id);
+      if (!result) {
+        return res.status(404).json({ message: "Not found" });
+      }
+      next();
+    });
   };
 
   validateNewUser = (req, res, next) => {
@@ -64,6 +91,27 @@ class ContactsController {
     }
     next();
   };
+
+  validateUpdateUser = (req, res, next) => {
+    const validationRules = Joi.object({
+      name: Joi.string(),
+      email: Joi.string(),
+      phone: Joi.string(),
+    });
+    const validationResult = validationRules.validate(req.body);
+    if (validationResult.error) {
+      return res.status(400).json("message: incorrect data");
+    }
+    next();
+  };
+
+  parseId(req) {
+    const {
+      params: { id },
+    } = req;
+    const intId = parseInt(id);
+    return intId;
+  }
 }
 
 module.exports = new ContactsController();
