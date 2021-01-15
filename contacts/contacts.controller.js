@@ -49,6 +49,19 @@ function validateNewUser(req, res, next) {
   next();
 }
 
+function validateUpdateUser(req, res, next) {
+  const validationRules = Joi.object({
+    name: Joi.string(),
+    email: Joi.string(),
+    phone: Joi.string(),
+  });
+  const validationResult = validationRules.validate(req.body);
+  if (validationResult.error) {
+    return res.status(400).json("message: incorrect data");
+  }
+  next();
+}
+
 async function addContact(req, res) {
   try {
     const newContact = await Contact.create(req.body);
@@ -104,4 +117,5 @@ module.exports = {
   addContact,
   removeContact,
   updateUser,
+  validateUpdateUser,
 };
