@@ -30,6 +30,7 @@ function initServer() {
 
 function initMiddlewares() {
   server.use(express.json());
+  server.use(express.static("public"));
   server.use(cors());
   server.use(morgan("dev"));
 }

@@ -10,4 +10,11 @@ router.get(
   userController.getCurrentUserInfo
 );
 
+router.patch(
+  "/avatars",
+  authController.authorize,
+  userController.upload.single("avatar_image"),
+  userController.updateAvatar
+);
+
 module.exports = router;

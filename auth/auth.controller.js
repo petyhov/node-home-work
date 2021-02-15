@@ -1,11 +1,16 @@
+const fs = require("fs");
 const {
   Types: { ObjectId },
 } = require("mongoose");
 const Joi = require("joi");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Avatar = require("avatar-builder");
 
 const Users = require("../user/User");
+const avatar = Avatar.catBuilder(128, {
+  cache: Avatar.Cache.folder("public/images"),
+});
 
 function validationLogin(req, res, next) {
   const validatinRules = Joi.object({
@@ -32,6 +37,9 @@ async function createUser(req, res) {
       ...req.body,
       password: hashedPassword,
     });
+    const test = await avatar.create(newUser._id);
+    newUser.avatarURL = `http://localhost:${process.env.PORT}/images/${newUser._id}.png`;
+    newUser.save();
     const { email, subscription } = newUser;
     return res.status(201).json({ email, subscription });
   } catch (error) {
@@ -81,7 +89,7 @@ async function authorize(req, res, next) {
     if (!findUser) {
       return res.status(401).send("message: Not authorized");
     }
-    res.user = findUser;
+    req.user = findUser;
     next();
   } catch (err) {
     return res.status(401).send("message: Not authorized");
@@ -89,14 +97,10 @@ async function authorize(req, res, next) {
 }
 
 function logout(req, res) {
-  const { user } = res;
+  const { user } = req;
   user.token = null;
   user.save();
   res.status(204).send();
-}
-
-function currentUserInfo(req, res) {
-  res.status(200).send(res.user);
 }
 
 module.exports = {

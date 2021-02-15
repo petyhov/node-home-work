@@ -10,6 +10,9 @@ const userSchema = new Schema({
   password: {
     type: String,
   },
+  avatarURL: {
+    type: String,
+  },
   subscription: {
     type: String,
     enum: ["free", "pro", "premium"],
